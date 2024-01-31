@@ -1,39 +1,23 @@
 // server.js
-const WebSocket = require('ws');
-const http = require('http');
 const express = require('express');
-const path = require('path');
-
+const mongoose = require('mongoose');
 const app = express();
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const PORT = process.env.PORT || 3000;
 
-// Servir o conteúdo estático (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, 'public')));
-
-let players = [];
-
-wss.on('connection', (ws) => {
-  // Adiciona o novo jogador à lista
-  players.push(ws);
-
-  // Envia uma mensagem de inicialização ao novo jogador
-  ws.send(JSON.stringify({ type: 'init', playerNumber: players.length }));
-
-  // Quando uma mensagem é recebida de um jogador
-  ws.on('message', (message) => {
-    // Envie a mensagem para o outro jogador
-    players.filter(player => player !== ws).forEach(player => player.send(message));
-  });
-
-  // Quando a conexão é fechada
-  ws.on('close', () => {
-    // Remove o jogador desconectado da lista
-    players = players.filter(player => player !== ws);
-  });
+// Configuração do MongoDB
+mongoose.connect('SUA_STRING_DE_CONEXAO_MONGODB', { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Erro na conexão ao MongoDB:'));
+db.once('open', () => {
+  console.log('Conectado ao MongoDB');
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Rota de exemplo
+app.get('/', (req, res) => {
+  res.send('Bem-vindo ao seu servidor online!');
+});
+
+// Inicie o servidor
+app.listen(PORT, () => {
+  console.log(`Servidor online em http://localhost:${PORT}`);
 });
