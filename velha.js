@@ -1,20 +1,22 @@
-const servidor = require("express")
-const { resquest } = require("http")
+import express, { response } from "express"
+import { request } from "http"
 
-const server = servidor()
+const app = express()
 
-// ROTA 01
-server.get('/pao', (resquest,response) => {
+const users = []
 
-    console.log(resquest.query.usario)
-    return response.send("aoba meu amigo")
-} )
+app.get("/users", (request,response)  => {
 
-// ROTA 02
-server.get('/ovo' , (resquest,response) => {
-
-    return response.send("Gosta de ovo mole?")
+    return response.json({users})
 })
 
 
-server.listen(3000)
+app.post("/users", (request,response) => {
+
+
+    console.log(request)
+    return response.json({ ok: true})
+
+})
+
+app.listen(3000)
